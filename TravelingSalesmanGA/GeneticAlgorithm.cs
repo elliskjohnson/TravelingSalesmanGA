@@ -10,8 +10,8 @@ namespace TravelingSalesmanGA
     {
         private List<string> Population;
         private List<double> Fitness;
-        private const int PopulationSize = 4;
-        private const double MutationProb = 0.05;
+        private const int PopulationSize = 6;
+        private const double MutationProb = 0.20;
         private List<int[]> SwapList;
         private HashSet<string> possibleVals = new HashSet<string> {
             "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
@@ -24,6 +24,7 @@ namespace TravelingSalesmanGA
             this.MethodID = 2;
             Population = new List<string>();
             Fitness = new List<double>();
+            TotalPathsFound = PopulationSize;
             GenerateSwaps();
         }
 
@@ -56,7 +57,7 @@ namespace TravelingSalesmanGA
         }
 
 
-        // Crossover is currently broken.
+        
         public void Crossover(string Parent1, string Parent2, ref string Child1, ref string Child2)
         {
             int length = Parent1.Length;
@@ -87,16 +88,64 @@ namespace TravelingSalesmanGA
                 p2_char[i] = tmp;
                 remaining_vals_p2.Remove(tmp);
             }
-            for (int i = CrossoverPoint; i < Parent1.Length; i++)
-            {
-                tmp = p2_char[i]
-                // Do the rest of the string, using hashset and other parent (check back when brain works)
-                if ()
-                {
+            int j = CrossoverPoint;
+            int z = CrossoverPoint;
 
+            // Handle p1
+            while (j < Parent1.Length)
+            {
+                tmp = p1_char[j];
+                // Do the rest of the string, using hashset and other parent (check back when brain works)
+                if (remaining_vals_p1.Contains(tmp))
+                {
+                    p1_char[z] = tmp;
+                    remaining_vals_p1.Remove(tmp);
+                    z++;
+                    j++;
+                } else
+                {
+                    j++;
+                }
+            }
+            // At this point we just randomly toss in remaining values
+            
+            while (remaining_vals_p1.Count != 0 && z < Parent1.Length)
+            {
+                int next_idx = rnd.Next(remaining_vals_p1.Count);
+                var next_val = remaining_vals_p1.ElementAt(next_idx);
+                p1_char[z] = next_val;
+                remaining_vals_p1.Remove(next_val);
+                z++;
+            }
+
+            // Handle p2:
+            j = CrossoverPoint;
+            z = CrossoverPoint;
+            while (j < Parent2.Length)
+            {
+                tmp = p2_char[j];
+                if (remaining_vals_p2.Contains(tmp))
+                {
+                    p2_char[z] = tmp;
+                    remaining_vals_p2.Remove(tmp);
+                    z++;
+                    j++;
+                } else
+                {
+                    j++;
                 }
             }
 
+            // At this point we just randomly toss in remaining values
+
+            while (remaining_vals_p2.Count != 0 && z < Parent2.Length)
+            {
+                int next_idx = rnd.Next(remaining_vals_p2.Count);
+                var next_val = remaining_vals_p2.ElementAt(next_idx);
+                p2_char[z] = next_val;
+                remaining_vals_p1.Remove(next_val);
+                z++;
+            }
 
             Child1 = String.Join("", p1_char);
             Child2 = String.Join("", p2_char);
@@ -148,8 +197,9 @@ namespace TravelingSalesmanGA
             string parent2 = "";
             string child1 = "";
             string child2 = "";
-            while (generationCount < 1000)
+            while (generationCount < 10000)
             {
+                TotalPathsFound += 2;
                 // Select the two best fit parents (minimum path length)
                 Selection(ref parent1, ref parent2);
 

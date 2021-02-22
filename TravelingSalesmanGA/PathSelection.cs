@@ -39,6 +39,7 @@ namespace TravelingSalesmanGA
             {
                 PathsList.Add(String.Join("", permutation));
             }
+            PathsList = PathsList.OrderBy(a => Guid.NewGuid()).ToList();
         }
 
         public string ReturnRandomPath()

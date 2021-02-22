@@ -98,6 +98,7 @@ namespace TravelingSalesmanGA
             shortest_path_storage = OldPath;
             ShortestPath = ReturnShortestPathString();
             ShortestDistance = OldPathLength;
+            TotalPathsFound = _numPathsAccepted;
         }
     }
 }
